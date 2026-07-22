@@ -1,5 +1,5 @@
 # TechHub – Blog CMS API
-
+article, user, comment, category, like
 ## Project Overview
 
 TechHub is a multi-user Blog Content Management System (CMS) that allows authors to create and manage articles while readers can browse and comment on published content. The system includes authentication, authorization, image uploads, searching, filtering, sorting, and pagination.
@@ -48,7 +48,7 @@ Students should learn how to:
 * Comment on articles
 * Update own profile
 
----
+-------------------------------------------
 
 # Models
 
@@ -70,6 +70,7 @@ Students should learn how to:
 * Name
 * Slug
 * Description
+
 
 ---
 
@@ -97,12 +98,24 @@ Students should learn how to:
 
 ---
 
+## Like
+
+* User (Reference)
+* Article (Reference)
+* Created At
+
+------------------------------------
+
+
+
 # Relationships
 
 * One User → Many Articles
 * One Category → Many Articles
 * One Article → Many Comments
 * One User → Many Comments
+* One User → Many Likes
+* One Article → Many Likes
 
 ---
 
@@ -154,6 +167,14 @@ Students should learn how to:
 * Add Comment
 * View Comments
 * Delete Comment
+
+---
+
+## Likes
+
+* Like Article
+* Unlike Article
+* View Likes Count
 
 ---
 

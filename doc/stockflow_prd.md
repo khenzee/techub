@@ -6,7 +6,6 @@ StockFlow is an Inventory Management backend that allows businesses to manage pr
 
 Students will apply the same backend concepts learned from TechHub in a completely different business domain.
 
----
 
 # Objectives
 
