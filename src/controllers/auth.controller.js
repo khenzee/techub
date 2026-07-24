@@ -1,11 +1,11 @@
 import User from "../models/user.model.js"
 
-const Register = async (req, res) =>{
+export const Register = async (req, res) =>{
     try {
         const {name, lastname, password, email, username} = req.body
 
         if(!name || !lastname || !password || !username){
-            res.status(400).json(
+            return res.status(400).json(
                 {
                     message: "name, lastname, password and username is required"
                 }
@@ -13,13 +13,13 @@ const Register = async (req, res) =>{
         }
         const existingUser = await User.findOne({username})
         if(existingUser){
-            res.status(401).json(
+            return res.status(401).json(
                 {
                     message:"user already exists"
                 }
             )
         }
-        const user = User.create({
+        const user = await User.create({
             name,
             lastname,
             email,
@@ -27,13 +27,13 @@ const Register = async (req, res) =>{
             username
         })
 
-        res.status(201).json({
+        return res.status(201).json({
             message: "user successfully created",
             user: req.body
         })
 
     } catch (error) {
-        res.status(500).json(
+        return res.status(500).json(
             {
                 message: " internal derver error",
                 error: error.message
