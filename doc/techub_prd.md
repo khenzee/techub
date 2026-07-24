@@ -117,7 +117,7 @@ Students should learn how to:
 * One User → Many Likes
 * One Article → Many Likes
 
----
+------
 
 # Features
 
