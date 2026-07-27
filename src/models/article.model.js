@@ -7,13 +7,7 @@ const articleSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    slug: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-    },
+
     content: {
       type: String,
       required: true,
@@ -27,16 +21,7 @@ const articleSchema = new mongoose.Schema(
       enum: ["draft", "published"],
       default: "draft",
     },
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-      required: true,
-    },
-    author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+  
     deletedAt: {
       type: Date,
       default: null,
