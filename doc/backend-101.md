@@ -47,6 +47,21 @@ REST (Representational State Transfer) is just a *convention* — a commonly agr
 
 Each resource usually gets a URL pattern, like `/products` or `/orders/5`. So "GET `/products`" means "fetch all products," and "DELETE `/orders/5`" means "delete order number 5."
 
+Every HTTP response also comes with a **status code**. This tells the client whether the request succeeded, failed, or needs more information:
+
+- `200 OK` — the request succeeded
+- `201 Created` — a new resource was created
+- `400 Bad Request` — the request was invalid
+- `401 Unauthorized` — the user is not authenticated
+- `404 Not Found` — the requested resource does not exist
+- `500 Internal Server Error` — something went wrong on the server
+
+In Express, you usually send a status code like this:
+
+```js
+res.status(201).json({ message: 'User created' });
+```
+
 Notice something: these four actions — Create, Read, Update, Delete — have a name of their own.
 
 ---
