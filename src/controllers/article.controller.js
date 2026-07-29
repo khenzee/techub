@@ -13,7 +13,9 @@ export const createArticle = async (req, res) => {
 
         const article = await Article.create({
             title,
-            content
+            content,
+            slug,
+            author: req.user._id
         })
 
         return res.status(201).json({
@@ -33,10 +35,9 @@ export const createArticle = async (req, res) => {
 export const allPublishedArticle = async(req,res)=>{
     try {
         const article = await Article.find({status:"published"})
-        if(!article){
-            res.status(200).json({
-                message:"no article found",
-                error: error.message
+        if(article.length === 0){
+            return res.status(404).json({
+                message:"no article found"
             })
         }
         return res.status(200).json({
@@ -54,7 +55,7 @@ export const allPublishedArticle = async(req,res)=>{
 export const updateArticle = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, content, category, status } = req.body;
+        const { title, content, status } = req.body;
         
         let article = await Article.findById(id);
         if (!article) {
@@ -62,7 +63,7 @@ export const updateArticle = async (req, res) => {
         }
      
         
-        let updateData = { title, content, category, status };
+        let updateData = { title, content, status };
     
         
         article = await Article.findByIdAndUpdate(id, updateData, { new: true });

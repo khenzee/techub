@@ -73,7 +73,7 @@ Students should build a production-ready inventory backend using the same archit
 * Recorded By (Reference)
 * Created At
 
----
+----------------------------------------------------
 
 # Relationships
 
@@ -121,7 +121,7 @@ Students should build a production-ready inventory backend using the same archit
 * Record Stock Out
 * View Stock History
 
----
+---------------------------------------------------
 
 ## Search & Filtering
 

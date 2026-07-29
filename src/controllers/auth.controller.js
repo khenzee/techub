@@ -1,5 +1,7 @@
 import User from "../models/user.model.js"
-
+import { generateToken } from "../utils/generateToken.js"
+import { hashPassword } from "../utils/hashPass.js"
+import bcrypt from "bcrypt"
 
 export const Register = async (req, res) =>{
     try {
@@ -20,11 +22,13 @@ export const Register = async (req, res) =>{
                 }
             )
         }
+
+        const hashedPassword = await hashPassword(password)
         const user = await User.create({
             name,
             lastname,
             email,
-            password,
+            password: hashedPassword,
             username
         })
 
@@ -59,13 +63,14 @@ export const Login = async (req,res) =>{
                 message: "user not found"
             })
         }
-        const isCorrectPassword = await password === existUser.password
+        const isCorrectPassword = await bcrypt.compare(password, existUser.password)
         if(!isCorrectPassword){
             return res.status(401).json({message: "incorrect password"})
         }
-
+        const token = await generateToken(existUser._id)
         return res.status(200).json({
             message: "user login successful",
+            token,
             user: username
         })
 

@@ -74,7 +74,7 @@ Students should build a scalable backend that manages academic resources using R
 * Enrollment Date
 * Status
 
----
+-------------------------------
 
 # Relationships
 
@@ -122,7 +122,7 @@ Students should build a scalable backend that manages academic resources using R
 * View Enrollments
 * Cancel Enrollment
 
----
+------------------------------------------------
 
 ## Search & Filtering
 

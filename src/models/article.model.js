@@ -7,7 +7,17 @@ const articleSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+    author:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+     },
     content: {
       type: String,
       required: true,
@@ -21,7 +31,7 @@ const articleSchema = new mongoose.Schema(
       enum: ["draft", "published"],
       default: "draft",
     },
-  
+
     deletedAt: {
       type: Date,
       default: null,
