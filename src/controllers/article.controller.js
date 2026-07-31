@@ -1,5 +1,5 @@
 import Article from "../models/article.model.js"
-
+import slugify from "slugify"
 
 export const createArticle = async (req, res) => {
     try {
@@ -10,11 +10,11 @@ export const createArticle = async (req, res) => {
                 message: "all field required"
             })
         }
-
+        const slug = slugify(title)
         const article = await Article.create({
             title,
             content,
-            slug,
+            slug: slug,
             author: req.user._id
         })
 

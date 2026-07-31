@@ -3,9 +3,10 @@ import { generateToken } from "../utils/generateToken.js"
 import { hashPassword } from "../utils/hashPass.js"
 import bcrypt from "bcrypt"
 
+
 export const Register = async (req, res) =>{
     try {
-        const {name, lastname, password, email, username} = req.body
+        const {name, lastname, password, email, username, role} = req.body
 
         if(!name || !lastname || !password || !username){
             return res.status(400).json(
@@ -29,7 +30,8 @@ export const Register = async (req, res) =>{
             lastname,
             email,
             password: hashedPassword,
-            username
+            username,
+            role: role
         })
 
         return res.status(201).json({
@@ -72,6 +74,7 @@ export const Login = async (req,res) =>{
             message: "user login successful",
             token,
             user: username
+
         })
 
     } catch (error) {
