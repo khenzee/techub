@@ -31,6 +31,25 @@ export const createArticle = async (req, res) => {
     }
 }
 
+export const getArticle = async(req,res)=>{
+    try {
+        const article = await Article.find()
+        if(article.length === 0){
+            return res.status(404).json({
+                message:"no article found"
+            })
+        }
+        return res.status(200).json({
+            message:"article fetched successfully",
+            article
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:"internal server error",
+            error:error.message
+        })
+    }
+}
 
 export const allPublishedArticle = async(req,res)=>{
     try {
@@ -45,7 +64,7 @@ export const allPublishedArticle = async(req,res)=>{
             article
         })
     } catch (error) {
-        res.status(500).json({
+       return res.status(500).json({
             message:"internal server error",
             error:error.message
         })
@@ -61,15 +80,13 @@ export const updateArticle = async (req, res) => {
         if (!article) {
             return res.status(404).json({ message: "Article not found" });
         }
-     
-        
+
         let updateData = { title, content, status };
-    
-        
+
         article = await Article.findByIdAndUpdate(id, updateData, { new: true });
-        res.status(200).json({ message: "Article updated successfully", article });
+       return res.status(200).json({ message: "Article updated successfully", article });
     } catch (error) {
-        res.status(500).json({ message: "Internal server error", error: error.message });
+       return res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
 
@@ -84,8 +101,27 @@ export const deleteArticle = async (req, res) => {
         
         await Article.findByIdAndDelete(id);
        
-        res.status(200).json({ message: "Article deleted successfully" });
+       return res.status(200).json({ message: "Article deleted successfully" });
     } catch (error) {
-        res.status(500).json({ message: "Internal server error", error: error.message });
+       return res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
+
+export const singleArticle = async(req,res) =>{
+    try {
+        const {id} = req.params
+
+        const article = await Article.findById(id)
+        if(!article){
+            return res.status(404).json({
+                message: "article not found"
+            }) 
+        }
+        return res.status(200).json({
+            message: "article found",
+            article
+        })
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+}
