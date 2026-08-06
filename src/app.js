@@ -9,8 +9,8 @@ const app = express()
 
 app.use(express.json())
 
-app.use("/auth", authRouter)
-app.use("/article", articleRouter)
+app.use("/api/v1/auth", authRouter)
+app.use("/api/v1/article", articleRouter)
 app.use("/category", categoryRouter)
 app.use("/user", userRouter)
 app.use("/comment", commentRouter)
