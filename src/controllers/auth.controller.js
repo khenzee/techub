@@ -23,7 +23,7 @@ export const Register = async (req, res) =>{
                 }
             )
         }
-
+        const avatar = req.file?.path || ""
         const hashedPassword = await hashPassword(password)
         const user = await User.create({
             name,
@@ -31,7 +31,8 @@ export const Register = async (req, res) =>{
             email,
             password: hashedPassword,
             username,
-            role: role
+            role,
+            avatar
         })
 
         return res.status(201).json({

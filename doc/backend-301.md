@@ -47,8 +47,13 @@ npm install cloudinary multer multer-storage-cloudinary
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import multer from 'multer';
+import {config} from "dotenv"
+
+config({path: "../.env"})
 
 // Configure Cloudinary with your credentials (store these in .env)
+
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -134,17 +139,21 @@ npm install nodemailer
 ```javascript
 import nodemailer from 'nodemailer';
 
-const transporter = nodemailer.createTransport({
+
+const transporter = () =>{
+   nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: process.env.EMAIL_USER, // e.g., your.email@gmail.com
         pass: process.env.EMAIL_APP_PASSWORD // 16-character App Password
     }
-});
+}); 
+} 
 
 // A reusable function to send emails
 export const sendEmail = async (to, subject, text, html) => {
     try {
+        await transporter()
         const mailOptions = {
             from: `"TechHub" <${process.env.EMAIL_USER}>`, // Sender display name
             to,

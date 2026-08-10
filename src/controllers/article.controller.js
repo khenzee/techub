@@ -7,15 +7,20 @@ export const createArticle = async (req, res) => {
 
         if (!title || !content) {
             return res.status(400).json({
-                message: "all field required"
+                message: "title and content are required"
             })
         }
-        const slug = slugify(title)
+
+        const slug = slugify(title, { lower: true, strict: true })
+        const thumbnail = req.file?.path || ""
+
         const article = await Article.create({
             title,
             content,
-            slug: slug,
-            author: req.user._id
+            slug,
+            author: req.user._id,
+            status: status || "draft",
+            thumbnail,
         })
 
         return res.status(201).json({

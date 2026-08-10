@@ -39,6 +39,26 @@ if (req.query.status) {
 ```
 *Rule of thumb:* Use `$in` when you are checking one field against many possible values.
 
+**Filtering by Multiple Properties:**
+What if a user wants to filter by both status AND category?
+`GET /api/articles?status=published&category=tech`
+
+Because we are simply adding keys to our `filter` object, MongoDB automatically treats multiple properties as an `AND` condition.
+
+```javascript
+// Adding multiple properties to the filter object
+if (req.query.status) {
+    filter.status = req.query.status;
+}
+
+if (req.query.category) {
+    filter.category = req.query.category;
+}
+
+// MongoDB receives: { status: "published", category: "tech" }
+// This automatically means: status MUST BE "published" AND category MUST BE "tech"
+```
+
 ## 2. Searching (Using `$regex` and `$or`)
 
 Search is a broader filter. Instead of exact matches, we usually want to find if a string *contains* the search term.
