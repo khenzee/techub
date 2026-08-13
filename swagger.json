@@ -1,0 +1,20 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Techub API",
+    "version": "1.0.0",
+    "description": "API documentation for the Techub backend"
+  },
+  "servers": [
+    { "url": "http://localhost:5000", "description": "Local server" }
+  ],
+  "paths": {
+    "/api/v1/article": {
+      "get": {
+        "tags": ["Article"],
+        "summary": "List published articles",
+        "responses": { "200": { "description": "OK" } }
+      }
+    }
+  }
+}
