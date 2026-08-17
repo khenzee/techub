@@ -60,7 +60,7 @@ export const Login = async (req,res) =>{
                 message: "all field is required"         
             })
         }
-        const existUser = await User.findOne({username})
+        const existUser = await User.findOne({username}).select("-password")
         if(!existUser){
             res.status(404).json({
                 message: "user not found"
