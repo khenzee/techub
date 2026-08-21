@@ -98,10 +98,11 @@ Create a custom operational error:
 
 ```js
 export class AppError extends Error {
-  constructor(message, statusCode, code = "REQUEST_FAILED") {
+  constructor(message, statusCode, code = "REQUEST_FAILED", details) {
     super(message);
     this.statusCode = statusCode;
     this.code = code;
+    this.details = details;
     this.isOperational = true;
   }
 }
@@ -125,7 +126,8 @@ export const errorHandler = (error, req, res, next) => {
     success: false,
     error: {
       code: error.code || "INTERNAL_ERROR",
-      message: statusCode === 500 ? "Internal server error" : error.message
+      message: statusCode === 500 ? "Internal server error" : error.message,
+      ...(statusCode < 500 && error.details && { details: error.details })
     }
   });
 };
@@ -166,6 +168,98 @@ if (!mongoose.isValidObjectId(req.params.id)) {
 ```
 
 Validation is an API boundary control. Mongoose schema validation should remain as a second layer, and updates should use `runValidators: true`.
+
+### Validating Techub route parameters
+
+Route parameters arrive as strings. Validate them before controllers call `findById()`, otherwise malformed IDs become Mongoose `CastError` responses instead of clear `400` errors.
+
+```js
+import { z } from "zod";
+
+export const articleIdParamsSchema = z.object({
+  id: z.string().regex(/^[a-f\d]{24}$/i, "Invalid article ID")
+}).strict();
+```
+
+Use this schema on `GET /api/v1/article/:id`, `PATCH /api/v1/article/:id`, and `DELETE /api/v1/article/:id`. Create equivalent schemas for comments, categories, and likes instead of trusting every `req.params.id` value.
+
+### Validating Techub query parameters
+
+Query values also arrive as strings. Convert and bound them in a schema before using them for MongoDB filtering, sorting, searching, or pagination.
+
+```js
+export const articleListQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  status: z.enum(["draft", "published"]).optional(),
+  sortBy: z.enum(["createdAt", "title"]).default("createdAt"),
+  order: z.enum(["asc", "desc"]).default("desc"),
+  search: z.string().trim().min(1).max(100).optional()
+}).strict();
+```
+
+For an endpoint such as `GET /api/v1/article?page=2&limit=20&status=published&sortBy=createdAt&order=desc`, validation ensures that `page` and `limit` are safe numbers, only known filters and sort fields are accepted, and search input cannot be unbounded.
+
+### Reusable validation middleware
+
+Validate each request location with one middleware. Store the parsed result separately so controllers receive typed, normalized data. This is important in Express 5 because `req.query` is a read-only property and should not be reassigned.
+
+```js
+import { AppError } from "../errors/app-error.js";
+
+export const validate = (schema, location = "body") => (req, res, next) => {
+  const result = schema.safeParse(req[location]);
+
+  if (!result.success) {
+    const details = result.error.issues.map((issue) => ({
+      field: issue.path.join("."),
+      message: issue.message
+    }));
+
+    return next(new AppError("Validation failed", 400, "VALIDATION_ERROR", details));
+  }
+
+  req.validated ??= {};
+  req.validated[location] = result.data;
+  next();
+};
+```
+
+Apply it in the article routes before authentication and controllers:
+
+```js
+router.get("/", validate(articleListQuerySchema, "query"), getArticle);
+router.get("/:id", validate(articleIdParamsSchema, "params"), singleArticle);
+router.patch(
+  "/:id",
+  validate(articleIdParamsSchema, "params"),
+  validate(updateArticleSchema),
+  protect,
+  allowRoles("author", "admin"),
+  requireArticleOwnerOrAdmin,
+  asyncHandler(updateArticle)
+);
+```
+
+The controller can now safely use the validated values:
+
+```js
+const { id } = req.validated.params; // For routes containing /:id
+const { page, limit, status, sortBy, order, search } = req.validated.query;
+const filter = status ? { status } : {};
+
+if (search) {
+  const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  filter.title = { $regex: escapedSearch, $options: "i" };
+}
+
+const articles = await Article.find(filter)
+  .sort({ [sortBy]: order === "asc" ? 1 : -1 })
+  .skip((page - 1) * limit)
+  .limit(limit);
+```
+
+Do not use `.passthrough()` for public API schemas. Rejecting unknown query and parameter fields helps make the API contract clear and prevents future code from accidentally trusting unreviewed input.
 
 ---
 
